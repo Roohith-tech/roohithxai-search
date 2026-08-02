@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body, html {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Fullscreen Planet Background */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 120%, #1e293b 0%, #0f172a 50%, #020617 100%);
+        }
+        .planet {
+            position: absolute;
+            bottom: -50vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120vw;
+            height: 120vw;
+            background: radial-gradient(circle at 50% 0%, #38bdf8 0%, #0369a1 20%, #0f172a 60%);
+            border-radius: 50%;
+            opacity: 0.6;
+            box-shadow: 0 0 80px rgba(56, 189, 248, 0.3);
+        }
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            opacity: 0.5;
+        }
+
+        /* Top Header Navigation */
+        header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 24px;
+            gap: 16px;
+        }
+        header a {
+            color: #f1f5f9;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+        header a:hover {
+            opacity: 1;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 4px);
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            opacity: 0.85;
+        }
+        .icon-grid:hover {
+            opacity: 1;
+        }
+        .icon-grid span {
+            width: 4px;
+            height: 4px;
+            background-color: #ffffff;
+            border-radius: 50%;
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            cursor: pointer;
+        }
+
+        /* Main Content Layout */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 120px);
+            padding: 0 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Google Branding */
+        .logo {
+            font-size: 80px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            user-select: none;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* Search Bar Wrapper & Elements */
+        .search-container {
+            width: 100%;
+            position: relative;
+            background-color: #ffffff;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            padding: 6px 8px 6px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: box-shadow 0.2s;
+        }
+        .search-container:focus-within {
+            box-shadow: 0 4px 24px rgba(56, 189, 248, 0.5);
+        }
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            color: #1e293b;
+            padding-right: 12px;
+        }
+        .search-input::placeholder {
+            color: #64748b;
+        }
+        .search-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .action-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+        .action-icon:hover {
+            transform: scale(1.05);
+        }
+        .ai-mode-btn {
+            background-color: #0284c7;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .ai-mode-btn:hover {
+            background-color: #0369a1;
+        }
+
+        /* Shortcut Grid Layout */
+        .shortcuts-container {
+            display: flex;
+            gap: 24px;
+            margin-top: 40px;
+        }
+        .shortcut-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-size: 12px;
+            width: 88px;
+            gap: 8px;
+        }
+        .shortcut-tile {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .shortcut-item:hover .shortcut-tile {
+            background-color: rgba(51, 65, 85, 0.8);
+            transform: translateY(-2px);
+        }
+        .shortcut-title {
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Scalable Media Queries */
+        @media (max-width: 480px) {
+            .logo { font-size: 60px; }
+            .ai-mode-btn { padding: 6px 12px; font-size: 12px; }
+            .shortcuts-container { gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Space/Planet Ambient Background -->
+    <div class="background-container">
+        <div class="stars"></div>
+        <div class="planet"></div>
+    </div>
+
+    <!-- Upper Right Header Actions -->
+    <header>
+        <a href="https://google.com">Gmail</a>
+        <a href="https://google.com">Images</a>
+        <div class="icon-grid" title="Google apps">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+        <div class="profile-avatar"></div>
+    </header>
+
+    <!-- Main Dynamic Interface -->
+    <main>
+        <h1 class="logo">Google</h1>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Ask Google" autofocus>
+            
+            <div class="search-actions">
+                <!-- Microphone Icon SVG -->
+                <div class="action-icon" title="Search by voice">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="#4285F4">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </div>
+                
+                <!-- Google Lens Icon SVG -->
+                <div class="action-icon" title="Search by image">
+                    <svg viewBox="0 0 24 24" width="22" height="22">
+                        <path fill="#EA4335" d="M6 14v3c0 .55.45 1 1 1h3v2H7c-1.66 0-3-1.34-3-3v-3h2z"/>
+                        <path fill="#4285F4" d="M18 10V7c0-.55-.45-1-1-1h-3V4h3c1.66 0 3 1.34 3 3v3h-2z"/>
+                        <path fill="#FBBC05" d="M6 10V7c0-.55.45-1 1-1h3V4H7C5.34 4 4 5.34 4 7v3h2z"/>
+                        <path fill="#34A853" d="M18 14v3c0 .55-.45 1-1 1h-3v2h3c1.66 0 3-1.34 3-3v-3h-2z"/>
+                        <circle fill="#4285F4" cx="12" cy="12" r="3"/>
+                        <circle fill="#34A853" cx="16.5" cy="16.5" r="1"/>
+                    </svg>
+                </div>
+
+                <!-- Custom 'AI Mode' Interactive Pill Button -->
+                <button class="ai-mode-btn" title="Toggle AI Assistant">
+                    <!-- Sparkling Star SVG Icon -->
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z"/>
+                    </svg>
+                    AI Mode
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom Grid Shortcuts Layout -->
+        <div class="shortcuts-container">
+            <!-- GitHub Tile Shortcut -->
+            <a href="https://github.com" class="shortcut-item">
+                <div class="shortcut-tile">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff">
